@@ -5,8 +5,7 @@ namespace Arcanist
 {
     public class CardGaugeController : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private CardSystem cardSystem;
+        private CardSystem cardSystem;
 
         [Header("Gauge")]
         [SerializeField] private GameObject[] gaugeCells;

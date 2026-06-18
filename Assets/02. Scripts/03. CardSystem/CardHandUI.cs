@@ -11,13 +11,13 @@ namespace Arcanist
         [SerializeField] private RectTransform cardPrefab;
 
         [Header("Draw Motion")]
-        [SerializeField] private float cardRiseDistance = 220f;
-        [SerializeField] private float drawDuration = 0.35f;
+        [SerializeField] private float cardRiseDistance = 150f;
+        [SerializeField] private float drawDuration = 0.3f;
         [SerializeField] private float startYRotation = 85f;
-        [SerializeField] private float extraYSpin = 360f;
+        [SerializeField] private float extraYSpin = 540f;
         [SerializeField] private float startZRotation = -8f;
-        [SerializeField] private float overshootY = 14f;
-        [SerializeField] private float minFlipScaleX = 0.18f;
+        [SerializeField] private float overshootY = 0f;
+        [SerializeField] private float minFlipScaleX = 0.3f;
 
         private CardData[] slotCards;
         private bool isDrawing;
@@ -32,20 +32,22 @@ namespace Arcanist
 
         public bool TryDrawToFirstEmptySlot(CardData cardData, Action onCompleted = null)
         {
-            if (isDrawing) return false;
+            if (cardData == null)
+            {
+                Debug.LogWarning("CardHandUI ::: Cannot draw because CardData is null.");
+                return false;
+            }
+
+            if (isDrawing)
+                return false;
 
             int slotIndex = GetFirstEmptySlot();
 
-            if (slotIndex < 0) return false;
+            if (slotIndex < 0)
+                return false;
 
             StartCoroutine(DrawCard(slotIndex, cardData, onCompleted));
             return true;
-        }
-
-        // 기존 CardSystem 코드와 임시 호환용. 실제 덱 시스템 연결 후에는 CardData를 넘기는 버전을 사용한다.
-        public bool TryDrawToFirstEmptySlot(Action onCompleted = null)
-        {
-            return TryDrawToFirstEmptySlot(null, onCompleted);
         }
 
         public void UseCard(int slotIndex)
@@ -54,6 +56,10 @@ namespace Arcanist
                 return;
 
             if (slotCards[slotIndex] == null)
+                return;
+
+            // 드로우 코루틴이 카드 RectTransform을 제어하는 중에는 삭제하지 않는다.
+            if (isDrawing)
                 return;
 
             CardView cardView = cardSlots[slotIndex].GetComponentInChildren<CardView>();
@@ -69,7 +75,10 @@ namespace Arcanist
         private int GetFirstEmptySlot()
         {
             for (int i = 0; i < slotCards.Length; i++)
-                if (slotCards[i] == null) return i;
+            {
+                if (slotCards[i] == null)
+                    return i;
+            }
 
             return -1;
         }
@@ -91,16 +100,24 @@ namespace Arcanist
             RectTransform card = Instantiate(cardPrefab, slot);
 
             card.gameObject.SetActive(true);
+            card.SetAsLastSibling();
+            ResetCardTransform(card);
 
             CardView cardView = card.GetComponent<CardView>();
-            
-            if (cardView != null) cardView.Setup(cardData);
+            if (cardView != null)
+                cardView.Setup(cardData);
 
             Vector2 endPos = Vector2.zero;
             Vector2 startPos = endPos + Vector2.down * cardRiseDistance;
             Vector2 overshootPos = endPos + Vector2.up * overshootY;
 
-            card.anchoredPosition = startPos;
+            if (IsDestroyed(card))
+            {
+                EndDrawingWithoutCallback();
+                yield break;
+            }
+
+            SetAnchoredPosition(card, startPos);
             card.localScale = Vector3.one * 0.92f;
             card.localRotation = Quaternion.Euler(0f, startYRotation + extraYSpin, startZRotation);
 
@@ -108,6 +125,12 @@ namespace Arcanist
 
             while (t < drawDuration)
             {
+                if (IsDestroyed(card))
+                {
+                    EndDrawingWithoutCallback();
+                    yield break;
+                }
+
                 t += Time.deltaTime;
 
                 float n = Mathf.Clamp01(t / drawDuration);
@@ -116,12 +139,18 @@ namespace Arcanist
                 if (n < 0.82f)
                 {
                     float moveT = EaseOutCubic(n / 0.82f);
-                    card.anchoredPosition = Vector2.LerpUnclamped(startPos, overshootPos, moveT);
+                    SetAnchoredPosition(card, Vector2.LerpUnclamped(startPos, overshootPos, moveT));
                 }
                 else
                 {
                     float settleT = EaseOutCubic((n - 0.82f) / 0.18f);
-                    card.anchoredPosition = Vector2.LerpUnclamped(overshootPos, endPos, settleT);
+                    SetAnchoredPosition(card, Vector2.LerpUnclamped(overshootPos, endPos, settleT));
+                }
+
+                if (IsDestroyed(card))
+                {
+                    EndDrawingWithoutCallback();
+                    yield break;
                 }
 
                 float yRotation = Mathf.Lerp(startYRotation + extraYSpin, 0f, eased);
@@ -135,12 +164,48 @@ namespace Arcanist
                 yield return null;
             }
 
-            card.anchoredPosition = endPos;
+            if (IsDestroyed(card))
+            {
+                EndDrawingWithoutCallback();
+                yield break;
+            }
+
+            SetAnchoredPosition(card, endPos);
             card.localScale = Vector3.one;
             card.localRotation = Quaternion.identity;
 
             isDrawing = false;
             onCompleted?.Invoke();
+        }
+
+        private void EndDrawingWithoutCallback()
+        {
+            isDrawing = false;
+        }
+
+        private bool IsDestroyed(RectTransform card)
+        {
+            return card == null;
+        }
+
+        private void ResetCardTransform(RectTransform card)
+        {
+            if (IsDestroyed(card))
+                return;
+
+            card.localScale = Vector3.one;
+            card.localRotation = Quaternion.identity;
+            card.localPosition = Vector3.zero;
+            card.anchoredPosition3D = Vector3.zero;
+        }
+
+        private void SetAnchoredPosition(RectTransform card, Vector2 anchoredPosition)
+        {
+            if (IsDestroyed(card))
+                return;
+
+            card.anchoredPosition = anchoredPosition;
+            card.localPosition = new Vector3(card.localPosition.x, card.localPosition.y, 0f);
         }
 
         private float EaseOutCubic(float value)

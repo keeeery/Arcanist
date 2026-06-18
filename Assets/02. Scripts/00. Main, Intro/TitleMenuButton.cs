@@ -59,7 +59,7 @@ public class TitleMenuButton : MonoBehaviour,
         switch (buttonType)
         {
             case ButtonType.NewGame:
-                SceneManager.LoadScene("Combat");
+                SceneManager.LoadScene("Intro");
                 break;
 
             case ButtonType.Quit:
