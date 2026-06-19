@@ -11,7 +11,7 @@ namespace Arcanist
 
         public override void Enter()
         {
-            Owner.StopMovement();
+            //Owner.StopMovement();
         }
 
         public override void UpdateState(AnimatorStateInfo stateInfo)

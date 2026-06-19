@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,22 +9,17 @@ namespace Arcanist
 
     public class PlayerController : MonoBehaviour 
     {
-        // 애니메이션 상태 Tag
-        // - 애니메이터의 상태마다 지정할 수 있는 stirng Tag
-        // - 컴포넌트에서는 해당 정보를 읽어서 현재 애니메이션 상태 추측
-
         private const string ANIM_TAG_ATTACK = "Attack";
         private const string ANIM_TAG_ATTACK_END = "Attack_End";
         private const string ANIM_TAG_MOVEMENT = "Movement";
-        private const string ANIM_TAG_FIRE = "Fire";
         private const string ANIM_TAG_JUMP = "Jump";
 
         public static readonly int MOVEMENT = Animator.StringToHash("Movement");
         public static readonly int IS_ATTACK = Animator.StringToHash("IsAttack");
         public static readonly int IS_GROUNDED = Animator.StringToHash("IsGrounded");
         public static readonly int JUMP = Animator.StringToHash("Jump");
+        public static readonly int DOUBLE_JUMP = Animator.StringToHash("DoubleJump");
         public static readonly int DESCENDING = Animator.StringToHash("Descending");
-        public static readonly int IS_FIRE = Animator.StringToHash("IsFire");
         public static readonly int DASH = Animator.StringToHash("Dash");
 
         public Animator Animator { get; private set; }
@@ -34,11 +29,11 @@ namespace Arcanist
         public int FacingDirection { get; private set; } = 1;
 
         [Header("Dash")]
-        [SerializeField] private float dashDistance = 1.5f;
+        [SerializeField] private float dashPower = 10.0f;
+        [SerializeField] private float dashDuration = 0.15f;
         [SerializeField] private float dashCooldown = 0.35f;
 
         private float nextDashTime;
-
         private Dictionary<int, PlayerAnimStateBase> StateDic { get; set; } = new();
         private PlayerAnimStateBase defaultState;
         private PlayerAnimStateBase currentState;
@@ -98,7 +93,6 @@ namespace Arcanist
 
             Controller2D.SetMoveInput(inputVector.x);
 
-            // ARCANIST 기획안 기준: D = 기본 공격
             if (SimpleInput.GetKeyDown(Key.D))
                 Animator.SetBool(IS_ATTACK, true);
         }
@@ -110,8 +104,14 @@ namespace Arcanist
 
         private void UpdateJumpInput()
         {
-            if (SimpleInput.GetKeyDown(Key.Space))
-                Controller2D.RequestJump();
+            if (SimpleInput.GetKeyDown(Key.Space) == false)
+                return;
+
+            bool wasGrounded = Controller2D.IsGrounded;
+            bool jumpAccepted = Controller2D.RequestJump();
+
+            if (jumpAccepted && wasGrounded == false)
+                Animator.SetTrigger(DOUBLE_JUMP);
         }
 
         private void UpdateDashInput()
@@ -123,8 +123,12 @@ namespace Arcanist
             if (Time.time < nextDashTime)
                 return;
 
+            bool dashAccepted = Controller2D.RequestDash(FacingDirection, dashPower, dashDuration);
+
+            if (dashAccepted == false)
+                return;
+
             nextDashTime = Time.time + dashCooldown;
-            Controller2D.AddExternalMovement(Vector3.right * FacingDirection * dashDistance);
             Animator.SetTrigger(DASH);
         }
 

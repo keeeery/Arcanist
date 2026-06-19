@@ -29,11 +29,19 @@ namespace Utilities
         
         private int     jumpCount           = 0;
         private bool    jumpRequested       = false;
+        private bool    dashRequested       = false;
+        private float   dashPower           = 0.0f;
+        private float   dashDuration        = 0.0f;
+        private float   dashTimer           = 0.0f;
+        private float   dashDirection       = 0.0f;
+        private float   dashStartY          = 0.0f;
         private Vector3 externalDelta       = Vector3.zero;   
         private float   moveInput           = 0.0f;
 
         // 외부에서 조회가 가능해야 하므로 읽기 전용 선언
         public float VerticalVelocity { get; private set; } = 0.0f;
+        public float HorizontalDashVelocity { get; private set; } = 0.0f;
+        public bool IsDashing => dashTimer > 0.0f;
         public bool IsGrounded { get; private set; } = false;
 
 
@@ -53,10 +61,17 @@ namespace Utilities
 
             ApplyGravaity();
             ApplyJump();
+            ApplyDash();
+
+            float horizontalMovement = IsDashing ? 0.0f : moveInput * speed;
+            float verticalMovement = IsDashing ? 0.0f : VerticalVelocity;
 
             Vector3 desireMove =
-                new Vector3(moveInput * speed, VerticalVelocity) * Time.fixedDeltaTime
+                new Vector3(horizontalMovement + HorizontalDashVelocity, verticalMovement) * Time.fixedDeltaTime
                 + externalDelta;
+
+            if (IsDashing)
+                desireMove.y = dashStartY - transform.position.y;
 
             externalDelta = Vector3.zero;
 
@@ -90,12 +105,29 @@ namespace Utilities
             return true;
         }
 
+        public bool RequestDash(int direction, float power, float duration)
+        {
+            if (direction == 0) return false;
+
+            dashDirection = Mathf.Sign(direction);
+            dashPower = power;
+            dashDuration = duration;
+            dashRequested = true;
+            return true;
+        }
+
         #endregion
 
         #region Private Methods (운동 파이프라인)
 
         private void ApplyGravaity()
         {
+            if (IsDashing)
+            {
+                VerticalVelocity = 0.0f;
+                return;
+            }
+
             if (IsGrounded && VerticalVelocity <= 0)
             {
                 VerticalVelocity += GROUND_STICK_SPEED;
@@ -148,6 +180,26 @@ namespace Utilities
             IsGrounded = false; 
         }
 
+        private void ApplyDash()
+        {
+            if (dashRequested)
+            {
+                dashRequested = false;
+                dashTimer = dashDuration;
+                dashStartY = transform.position.y;
+                VerticalVelocity = 0.0f;
+                HorizontalDashVelocity = dashDirection * dashPower;
+            }
+
+            if (dashTimer <= 0.0f)
+            {
+                HorizontalDashVelocity = 0.0f;
+                return;
+            }
+
+            dashTimer -= Time.fixedDeltaTime;
+        }
+
         private bool CheckGrounded()
         {
             Bounds box = GetCastBox();
@@ -161,4 +213,3 @@ namespace Utilities
         #endregion
     }
 }
-

@@ -93,9 +93,9 @@ namespace Utilities
         }
         #endregion
 
-        #region 축 입력 (WASD / 방향키)
+        #region 축 입력 (방향키)
         /// <summary>
-        /// A/D 키 또는 좌/우 화살표 키 대응
+        /// 좌/우 화살표 키 대응
         /// (레거시에서 Input.GetAxisRaw("Horizontal")과 동일)
         /// </summary>
         /// <returns>수평 축 원시 입력값을 반환 (-1, 0, 1)</returns>
@@ -103,16 +103,16 @@ namespace Utilities
         {
             float axis = 0.0f;
 
-            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+            if (Keyboard.current.rightArrowKey.isPressed)
                 axis += 1.0f;
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+            if (Keyboard.current.leftArrowKey.isPressed)
                 axis -= 1.0f;
 
             return axis;
         }
 
         /// <summary>
-        /// W/S 키 또는 상/하 화살표 키 대응
+        /// 상/하 화살표 키 대응
         /// (레거시에서 Input.GetAxisRaw("Vertical")과 동일)
         /// </summary>
         /// <returns>수직 축 원시 입력값을 반환 (-1, 0, 1)</returns>
@@ -120,9 +120,9 @@ namespace Utilities
         {
             float axis = 0.0f;
 
-            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+            if (Keyboard.current.upArrowKey.isPressed)
                 axis += 1.0f;
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+            if (Keyboard.current.downArrowKey.isPressed)
                 axis -= 1.0f;
 
             return axis;

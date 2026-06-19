@@ -16,6 +16,7 @@ namespace Arcanist
 
         public override void UpdateState(AnimatorStateInfo stateInfo)
         {
+            Owner.StopMovement();
             // AnimatorStateInfo.normalizedTime
             // - 현재 애니메이션 진행율 나타냅니다
             // - 시작 되지 않았으면 0% = 0.0f
@@ -32,11 +33,10 @@ namespace Arcanist
                 // 다음 콤보 입력이 없다면 입력을 받아준다
                 if (Animator.GetBool(PlayerController.IS_ATTACK) == false)
                 {
-                    bool input = SimpleInput.GetKeyDown(Key.Z);
+                    bool input = SimpleInput.GetKeyDown(Key.D);
                     Animator.SetBool(PlayerController.IS_ATTACK, input);
                 }
             }
         }
     }
 }
-
