@@ -20,6 +20,7 @@ namespace Arcanist
         [SerializeField] private float idleZoomSize = 4.5f;
         [SerializeField] private float moveZoomSize = 5.2f;
         [SerializeField] private float zoomSmooth = 3f;
+        [SerializeField] private float idleZoomDelayDistance = 0.15f;
 
         [Header("Movement Check")]
         [SerializeField] private float moveThreshold = 0.01f;
@@ -55,7 +56,9 @@ namespace Arcanist
                 lookAheadSmooth * Time.deltaTime
             );
 
-            float targetZoom = isMoving ? moveZoomSize : idleZoomSize;
+            float distanceToPlayerX = Mathf.Abs(cameraTarget.position.x - player.position.x);
+            bool canIdleZoomIn = isMoving || distanceToPlayerX <= idleZoomDelayDistance;
+            float targetZoom = canIdleZoomIn ? (isMoving ? moveZoomSize : idleZoomSize) : moveZoomSize;
 
             cinemachineCamera.Lens.OrthographicSize = Mathf.Lerp(
                 cinemachineCamera.Lens.OrthographicSize,

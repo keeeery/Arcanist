@@ -10,13 +10,13 @@ namespace Arcanist
 
         public override void Enter()
         {
-            // 공격중엔 이동 금지
-            Owner.StopMovement();
+
         }
 
         public override void UpdateState(AnimatorStateInfo stateInfo)
         {
-            Owner.StopMovement();
+            // 공격 중 이동 시 애니메이션 없이 이동
+            Owner.HandleMovementWithoutAnimation();
             // AnimatorStateInfo.normalizedTime
             // - 현재 애니메이션 진행율 나타냅니다
             // - 시작 되지 않았으면 0% = 0.0f

@@ -1028,7 +1028,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1224717264}
   m_Father: {fileID: 1719134164}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &943675248
@@ -1377,6 +1378,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1166660528}
   m_CullTransparentMesh: 1
+--- !u!1 &1204970925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1204970926}
+  - component: {fileID: 1204970927}
+  m_Layer: 5
+  m_Name: FXSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1204970926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204970925}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2004398619}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1204970927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204970925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c61d527e8db2f4864a8c73355b9d049d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FxSpawner
+  fxRoot: {fileID: 0}
 --- !u!1 &1217425803
 GameObject:
   m_ObjectHideFlags: 0
@@ -1481,6 +1527,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1224717263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1224717264}
+  m_Layer: 0
+  m_Name: Animator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1224717264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224717263}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 779586767}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1250472683
 GameObject:
   m_ObjectHideFlags: 0
@@ -8778,7 +8855,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6640852881692144544, guid: f559b5f2395874e32b3d687d7999812d, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_RefCount
-      value: 1427
+      value: 5512
       objectReference: {fileID: 0}
     - target: {fileID: 6640852881692144544, guid: f559b5f2395874e32b3d687d7999812d, type: 3}
       propertyPath: m_TileColorArray.Array.data[1].m_RefCount
@@ -8790,7 +8867,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6640852881692144544, guid: f559b5f2395874e32b3d687d7999812d, type: 3}
       propertyPath: m_TileMatrixArray.Array.data[0].m_RefCount
-      value: 0
+      value: 4085
       objectReference: {fileID: 0}
     - target: {fileID: 6640852881692144544, guid: f559b5f2395874e32b3d687d7999812d, type: 3}
       propertyPath: m_TileMatrixArray.Array.data[1].m_Data.e00
@@ -17560,8 +17637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Study.Utilities.CharacterController2D
   speed: 3.5
-  gravity: -18
-  jumpPower: 8
+  gravity: -20
+  jumpPower: 7.5
   maxJumpCount: 2
   groundCheckDistance: 0.5
   skinWidth: 0.02
@@ -17652,6 +17729,9 @@ MonoBehaviour:
   dashPower: 10
   dashDuration: 0.3
   dashCooldown: 1
+  doubleJumpFxPrefab: {fileID: 4479183294331999692, guid: 3f4675b17d1cd4391be0b8e08d2cae8d, type: 3}
+  dashFxPrefab: {fileID: 8736860749328402556, guid: eb71feb268dd94bf4b14deef3b568fd5, type: 3}
+  fxSpawnPoint: {fileID: 1719134164}
 --- !u!61 &1719134167
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17695,7 +17775,7 @@ BoxCollider2D:
     adaptiveTilingThreshold: 0
     drawMode: 0
     adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_AutoTiling: 1
   m_Size: {x: 0.57493544, y: 1.0613962}
   m_EdgeRadius: 0
 --- !u!1 &1732052588
@@ -18163,7 +18243,9 @@ Transform:
   m_LocalPosition: {x: -20, y: 0, z: 90}
   m_LocalScale: {x: 0.009259259, y: 0.009259259, z: 0.009259259}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1204970926}
+  - {fileID: 2048852422}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2004398620
@@ -18266,6 +18348,7 @@ MonoBehaviour:
   idleZoomSize: 4
   moveZoomSize: 4.5
   zoomSmooth: 2
+  idleZoomDelayDistance: 0.1
   moveThreshold: 0.1
 --- !u!19719996 &2012499229 stripped
 TilemapCollider2D:
@@ -18309,6 +18392,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -89.99997}
   m_SizeDelta: {x: 650, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2048852421
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2048852422}
+  - component: {fileID: 2048852423}
+  m_Layer: 5
+  m_Name: CardDatabase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2048852422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048852421}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2004398619}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2048852423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048852421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 058bc8de27b214ce59ce659d89e41dde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Arcanist.CardDatabase
+  allCards: []
 --- !u!1 &2050365579
 GameObject:
   m_ObjectHideFlags: 0
