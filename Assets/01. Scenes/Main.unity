@@ -204,6 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arcanist.AudioManager
   bgmSource: {fileID: 214875365}
+  fadeDuration: 0.25
 --- !u!82 &214875365
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5647,6 +5648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arcanist.SceneBGMPlayer
   bgmClip: {fileID: 8300000, guid: 100377b4bde584e8d9f325e2804493d2, type: 3}
+  stopCurrentBGM: 0
   playDelay: 1
 --- !u!1 &907258803
 GameObject:

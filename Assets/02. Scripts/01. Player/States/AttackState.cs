@@ -16,7 +16,7 @@ namespace Arcanist
         public override void UpdateState(AnimatorStateInfo stateInfo)
         {
             // 공격 중 이동 시 애니메이션 없이 이동
-            Owner.HandleMovementWithoutAnimation();
+            Owner.HandleMovementWithoutAnimation(0.75f);
             // AnimatorStateInfo.normalizedTime
             // - 현재 애니메이션 진행율 나타냅니다
             // - 시작 되지 않았으면 0% = 0.0f

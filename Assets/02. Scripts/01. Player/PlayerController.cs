@@ -113,14 +113,14 @@ namespace Arcanist
                 Animator.SetTrigger(PARRY);
         }
 
-        public void HandleMovementWithoutAnimation()
+        public void HandleMovementWithoutAnimation(float moveScale = 0.75f)
         {
             float horizontal = 0.0f;
 
             if (Keyboard.current.leftArrowKey.isPressed)
-                horizontal = -0.75f;
+                horizontal = -moveScale;
             else if (Keyboard.current.rightArrowKey.isPressed)
-                horizontal = 0.75f;
+                horizontal = moveScale;
 
             if (Mathf.Abs(horizontal) > 0.0f)
             {

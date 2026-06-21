@@ -5,6 +5,29 @@ namespace Utilities
     public static class TransformExtensions
     {
         /// <summary>
+        /// 대상 Transform이 위치(point)와 거리(범위:range) 영역 안에 존재하는지 여부를 반환
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="point"></param>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public static bool IsInRange(this Transform from, Vector3 point, float range)
+        {
+            return Vector3.Distance(from.position, point) <= range;
+        }
+
+        /// <summary>
+        /// 대상 Transform의 world position이 point와 동일한지 반환 (오차 1/1000 이내)
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static bool IsSamePosition(this Transform from, Vector3 point, float sTOPPING_DISTANCE)
+        {
+            return Vector3.Distance(from.position, point) <= 0.001;
+        }
+
+        /// <summary>
         /// 대상 Transform까지의 월드 방향 벡터 (normalized)
         /// </summary>
         public static Vector3 DirectionTo(this Transform from, Transform to)

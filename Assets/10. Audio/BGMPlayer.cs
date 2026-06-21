@@ -3,14 +3,22 @@ using UnityEngine;
 
 namespace Arcanist
 {
-    public class SceneBGMPlayer : MonoBehaviour
+    public class BGMPlayer : MonoBehaviour
     {
         [SerializeField] private AudioClip bgmClip;
-        [SerializeField] private float playDelay = 1.0f;
+        [SerializeField] private bool stopCurrentBGM;
+        [SerializeField] private float playDelay;
 
         private IEnumerator Start()
         {
-            yield return new WaitForSeconds(playDelay);
+            if (playDelay > 0.0f)
+                yield return new WaitForSeconds(playDelay);
+
+            if (stopCurrentBGM)
+            {
+                AudioManager.Instance.StopBGM();
+                yield break;
+            }
 
             AudioManager.Instance.PlayBGM(bgmClip);
         }

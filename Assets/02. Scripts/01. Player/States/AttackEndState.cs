@@ -11,11 +11,13 @@ namespace Arcanist
 
         public override void Enter()
         {
-            //Owner.StopMovement();
+
         }
 
         public override void UpdateState(AnimatorStateInfo stateInfo)
         {
+            Owner.HandleMovementWithoutAnimation(0.35f);
+            
             if (stateInfo.normalizedTime < INPUT_RESET_TIME)
             {
                 Animator.SetBool(PlayerController.IS_ATTACK, false);
