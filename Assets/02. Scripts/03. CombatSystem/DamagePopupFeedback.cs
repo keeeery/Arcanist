@@ -1,49 +1,44 @@
-using Study.Utilities;
+using Arcanist;
 using UnityEngine;
 using Utilities;
 
-namespace Arcanist
+public class DamagePopupFeedback : MonoBehaviour, ICombatObserver
 {
-    public class DamagePopupFeedback : MonoBehaviour, ICombatObserver
+    [field: SerializeField] public FloatingText PopupText { get; private set; }
+    [field: SerializeField] public Color DamageColor { get; private set; }
+    [field: SerializeField] public Color CriticalColor { get; private set; }
+
+    public int CriticalPoint = 260;
+
+    private ComponentPool<FloatingText> Pool { get; set; }
+
+    private void Awake()
     {
-        [field: SerializeField] public FloatingText PopupText { get; private set; }
-        [field: SerializeField] public Color DamageColor { get; private set; }
-        [field: SerializeField] public Color CriticalColor { get; private set; }
+        Pool = new ComponentPool<FloatingText>(PopupText, transform);
+    }
 
-        public int CriticalPoint = 250;
+    private void OnEnable()
+    {
+        CombatSystem.Instance.Subscribe(this);
+    }
 
-        private ComponentPool<FloatingText> Pool { get; set; }
+    private void OnDisable()
+    {
+        CombatSystem.Instance.UnSubscribe(this);
+    }
 
-        private void Awake()
-        {
-            Pool = new ComponentPool<FloatingText>(PopupText, transform);
-        }
+    public void OnDamageTaken(CombatEntity sender, CombatEntity receiver, CombatEvent @event)
+    {
+        FloatingText textItem = Pool.Get();
 
-        private void OnEnable() 
-        {
-            CombatSystem.Instance.Subscribe(this);
-        }
+        Color color = DamageColor;
 
-        private void OnDisable()
-        {
-            CombatSystem.Instance.UnSubscribe(this);
-        }
+        if (@event.Amount > CriticalPoint) color = CriticalColor;
+        textItem.Show($"{@event.Amount}", color, receiver.HeadUpPivot.position);
+    }
 
-        public void OnDamageTaken(CombatEntity sender, CombatEntity receiver, CombatEvent @event)
-        {
-            FloatingText textItem = Pool.Get();
-
-            Color color = DamageColor;
-
-            if (@event.Amount > CriticalPoint) color = CriticalColor;
-            textItem.Show($"{@event.Amount}", color, receiver.HeadUpPivot.position);
-            
-        }
-
-        public void OnHealTaken(CombatEntity sender, CombatEntity receiver, CombatEvent @event)
-        {
-            
-        }
+    public void OnHealTaken(CombatEntity sender, CombatEntity receiver, CombatEvent @event)
+    {
+        
     }
 }
-

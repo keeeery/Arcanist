@@ -6,7 +6,7 @@ namespace Arcanist
     {
         public override void TakeDamage(int damage)
         {
-            
+            base.TakeDamage(damage);
         }
 
         public override void TakeHeal(int heal)

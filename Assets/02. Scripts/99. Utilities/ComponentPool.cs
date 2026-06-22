@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Study.Utilities
+namespace Utilities
 {
     // # ComponentPool<T> - 간이 오브젝트 풀
     //

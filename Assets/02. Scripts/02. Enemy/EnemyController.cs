@@ -8,6 +8,8 @@ namespace Arcanist
     {
         public static readonly int IS_MOVE = Animator.StringToHash("IsMove");
         public static readonly int ATTACK = Animator.StringToHash("Attack");
+        public static readonly int ATTACK_INDEX = Animator.StringToHash("AttackIndex");
+        public static readonly int DIE = Animator.StringToHash("Die");
 
         private const string ANIM_TAG_ATTACK = "Attack";
 
@@ -24,10 +26,6 @@ namespace Arcanist
         [Header("Patrol")]
         [SerializeField] private Transform patrolPoint;
 
-        [Header("Death")]
-        [SerializeField] private GameObject deadEffectPrefab;
-        [SerializeField] private Vector3 deadEffectOffset;
-        [SerializeField] private float deadEffectLifeTime = 0.5f;
 
         [field: SerializeField] public Transform Target { get; private set; }
 
@@ -47,6 +45,7 @@ namespace Arcanist
 
         private Vector3 originalScale;
         private float nextAttackTime;
+        private bool isDead;
 
         private EnemyStateBase currentState;
         private EnemyStateBase defaultState;
@@ -80,6 +79,9 @@ namespace Arcanist
 
         private void Update()
         {
+            if (isDead)
+                return;
+
             UpdateAnimState();
         }
 
@@ -160,6 +162,7 @@ namespace Arcanist
 
         public void TriggerAttackAnimation()
         {
+            Animator.SetInteger(ATTACK_INDEX, Random.Range(0, 2));
             Animator.SetTrigger(ATTACK);
         }
 
@@ -192,6 +195,20 @@ namespace Arcanist
             if (Mathf.Abs(yDistance) <= EPSILON) return 0;
             if (yDistance > 0.0f) return 1;
             return -1;
+        }
+
+        public void Dead()
+        {
+            if (isDead) return;
+
+            isDead = true;
+            StopMove();
+            Animator.SetTrigger(DIE);
+        }
+
+        public void DestroySelf()
+        {
+            Destroy(gameObject);
         }
     }
 }

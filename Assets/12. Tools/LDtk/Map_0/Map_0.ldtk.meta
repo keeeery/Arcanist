@@ -15,7 +15,7 @@ ScriptedImporter:
   _intGridValueColorsVisible: 1
   _useCompositeCollider: 1
   _geometryType: 0
-  _createBackgroundColor: 1
+  _createBackgroundColor: 0
   _createLevelBoundsTrigger: 0
   _useParallax: 1
   _scaleEntities: 1
@@ -25,7 +25,7 @@ ScriptedImporter:
   - _key: Decoration_1
     _asset: {instanceID: 0}
   - _key: Ground_1
-    _asset: {fileID: 11400000, guid: 6261c2c55733a4894b6438c69703c2ac, type: 2}
+    _asset: {fileID: 11400000, guid: f4cdbae92c8cf4050bb67fd7e20cc199, type: 2}
   - _key: Ground_2
     _asset: {instanceID: 0}
   _entities: []

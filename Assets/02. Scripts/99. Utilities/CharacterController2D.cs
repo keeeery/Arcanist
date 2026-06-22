@@ -1,15 +1,7 @@
-using Study.Utilities;
 using UnityEngine;
-using UnityEngine.InputSystem;
-
 
 namespace Utilities
 {
-    // RequireComponent?
-    // : 아래의 선언된 클래스가 동작하려면 typeof(컴포넌트)의
-    //  컴포넌트가 필요하다고 강제하는 키워드 입니다.
-    //  GameObject에 Attach하게 되면 필요한 컴포넌트를
-    //  자동으로 생성합니다
     [RequireComponent(typeof(Rigidbody2D))]
     public class CharacterController2D : MonoBehaviour
     {

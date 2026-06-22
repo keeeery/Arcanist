@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Arcanist
 {
-    // 유니티 내장 타입 UnityEngine.EventType(IMGUI용)과 이름이 겹쳐서 CombatEventType으로 선언
     public enum CombatEventType
     {
         DamageEvent, HealEvent
