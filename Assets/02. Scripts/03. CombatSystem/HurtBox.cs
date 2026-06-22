@@ -21,13 +21,22 @@ namespace Arcanist
             col2D = GetComponent<Collider2D>();
         }
         
-        private void Start()
+        private void OnEnable()
         {
+            if (col2D == null)
+                col2D = GetComponent<Collider2D>();
+
+            if (CombatSystem.Instance == null)
+                return;
+
             CombatSystem.Instance.AddHurtBox(col2D, this);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
+            if (CombatSystem.Instance == null || col2D == null)
+                return;
+
             CombatSystem.Instance.RemoveHurtBox(col2D);
         }
     }

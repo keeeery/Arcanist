@@ -37,11 +37,13 @@ namespace Arcanist
 
         public override void TakeDamage(int damage)
         {
-            if(Stat.ApplyDamage(damage))
+            if (Stat.ApplyDamage(damage))
             {
                 EnemyController.Dead();
                 return;
             }
+            
+            EnemyController.Hurt();
 
             StartCoroutine(HitEffectCoroutine());
         }

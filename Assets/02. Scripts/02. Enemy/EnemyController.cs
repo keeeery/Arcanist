@@ -9,6 +9,7 @@ namespace Arcanist
         public static readonly int IS_MOVE = Animator.StringToHash("IsMove");
         public static readonly int ATTACK = Animator.StringToHash("Attack");
         public static readonly int ATTACK_INDEX = Animator.StringToHash("AttackIndex");
+        public static readonly int IS_HURT = Animator.StringToHash("IsHurt");
         public static readonly int DIE = Animator.StringToHash("Die");
 
         private const string ANIM_TAG_ATTACK = "Attack";
@@ -23,9 +24,11 @@ namespace Arcanist
         [SerializeField] private float attackHitDelay = 0.5f;
         [SerializeField] private float attackCooldown = 2.0f;
 
+        [Header("Hurt")]
+        [SerializeField] private float hurtDuration = 0.15f;
+
         [Header("Patrol")]
         [SerializeField] private Transform patrolPoint;
-
 
         [field: SerializeField] public Transform Target { get; private set; }
 
@@ -45,6 +48,8 @@ namespace Arcanist
 
         private Vector3 originalScale;
         private float nextAttackTime;
+        private float hurtEndTime;
+        private bool isHurt;
         private bool isDead;
 
         private EnemyStateBase currentState;
@@ -81,6 +86,14 @@ namespace Arcanist
         {
             if (isDead)
                 return;
+
+            if (isHurt)
+            {
+                if (Time.time >= hurtEndTime)
+                    EndHurt();
+                else
+                    return;
+            }
 
             UpdateAnimState();
         }
@@ -171,6 +184,23 @@ namespace Arcanist
             // 이후 EnemyAttackHitbox 활성화 또는 공격 판정 호출 위치
         }
 
+        public void Hurt()
+        {
+            if (isDead)
+                return;
+
+            isHurt = true;
+            hurtEndTime = Time.time + hurtDuration;
+            StopMove();
+            Animator.SetBool(IS_HURT, true);
+        }
+
+        private void EndHurt()
+        {
+            isHurt = false;
+            Animator.SetBool(IS_HURT, false);
+        }
+
         private float UpdateDirection(Vector3 goalPosition)
         {
             float dirToGoal = goalPosition.x - transform.position.x;
@@ -202,7 +232,9 @@ namespace Arcanist
             if (isDead) return;
 
             isDead = true;
+            isHurt = false;
             StopMove();
+            Animator.SetBool(IS_HURT, false);
             Animator.SetTrigger(DIE);
         }
 
