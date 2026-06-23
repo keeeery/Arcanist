@@ -33,6 +33,11 @@ namespace Arcanist
             {
                 iconImage.sprite = CardData.Icon;
                 iconImage.enabled = CardData.Icon != null;
+                iconImage.raycastTarget = false;
+
+                Color color = iconImage.color;
+                color.a = CardData.Icon != null ? 1f : 0f;
+                iconImage.color = color;
             }
         }
 
@@ -50,6 +55,10 @@ namespace Arcanist
             {
                 iconImage.sprite = null;
                 iconImage.enabled = false;
+
+                Color color = iconImage.color;
+                color.a = 0f;
+                iconImage.color = color;
             }
         }
 
