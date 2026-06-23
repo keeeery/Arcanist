@@ -6,7 +6,7 @@ namespace Arcanist
     public class HitBox : MonoBehaviour
     {
         [field: SerializeField] public AttackInfo AttackInfo { get; private set; }
-
+        [SerializeField] private ParryLightEffect parryLightEffect;
         private CombatEntity Owner { get; set; }
 
         private HashSet<HurtBox> checkList = new HashSet<HurtBox>();
@@ -17,8 +17,7 @@ namespace Arcanist
             
             if(Owner == null)
             {
-                Debug.LogError($"{name} : 부모 계층에서 CombatEntity를 찾지 못했습니다." +
-                    $"오브젝트를 삭제합니다");
+                Debug.LogError($"{name} : 부모 계층에서 CombatEntity를 찾지 못했습니다. 오브젝트를 삭제합니다");
                 Destroy(gameObject);
             }
         }
@@ -30,15 +29,37 @@ namespace Arcanist
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            HurtBox hurtBox = CombatSystem.Instance.GetHurtBoxOrNull(collision);
-            if (hurtBox == null) return;
-            
-            if (checkList.Contains(hurtBox)) return;
+            Debug.Log($"[HitBox] {name} collided with {collision.name}");
 
-            checkList.Add(hurtBox);
+            HurtBox hurtBox = CombatSystem.Instance.GetHurtBoxOrNull(collision);
+            if (hurtBox == null)
+            {
+                Debug.LogWarning($"[HitBox] {collision.name} is not registered as HurtBox");
+                return;
+            }
+            
 
             CombatEntity sender = Owner;
             CombatEntity receiver = hurtBox.Owner;
+
+            PlayerController playerController = receiver.GetComponent<PlayerController>();
+
+            if (playerController != null)
+            {
+                Debug.Log($"[Parry] Player hit detected. IsParrying: {playerController.IsParrying}, WindowOpen: {playerController.IsParryWindowOpen}");
+
+                if (playerController.IsParryWindowOpen)
+                {
+                    Debug.Log("[Parry] Success");
+                    playerController.SuccessParry();
+                    parryLightEffect.Play();
+                    return;
+                }
+            }
+
+            if (checkList.Contains(hurtBox)) return;
+
+            checkList.Add(hurtBox);
 
             int damage = AttackInfo.RollDamage();
 

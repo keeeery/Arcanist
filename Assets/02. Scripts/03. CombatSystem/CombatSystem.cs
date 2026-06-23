@@ -27,15 +27,15 @@ namespace Arcanist
 
         public void To(CombatEntity sender, CombatEntity receiver, CombatEvent @event)
         {
-            if(sender == null || receiver == null)
+            if (sender == null || receiver == null)
             {
                 Debug.LogWarning($"CombatSystem ::: " +
                     $"sender : {sender != null}, receiver : {receiver != null}");
                 return;
             }
 
-            Debug.Log($"{sender.name}이 {receiver.name}에게 {@event.EventType.ToString()}" +
-                $", {@event.Amount}을 전달!");
+            // Debug.Log($"{sender.name}이 {receiver.name}에게 {@event.EventType.ToString()}" +
+            //     $", {@event.Amount}을 전달!");
 
             switch (@event.EventType)
             {

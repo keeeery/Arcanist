@@ -27,7 +27,7 @@ namespace Arcanist
             if (stateInfo.normalizedTime < INPUT_RESET_TIME)
                 Animator.SetBool(PlayerController.IS_ATTACK, false);
             // 콤보 입력 구간 (30% ~ 90%)
-            else if(INPUT_RESET_TIME < stateInfo.normalizedTime && 
+            else if (INPUT_RESET_TIME < stateInfo.normalizedTime && 
                 stateInfo.normalizedTime < COMBO_INPUT_END_TIME)
             {
                 // 다음 콤보 입력이 없다면 입력을 받아준다

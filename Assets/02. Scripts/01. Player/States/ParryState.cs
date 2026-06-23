@@ -4,7 +4,7 @@ namespace Arcanist
 {
     public class ParryState : PlayerAnimStateBase
     {
-        private const float PARRY_WINDOW = 0.15f;
+        private const float PARRY_WINDOW = 0.8f;
 
         public ParryState(PlayerController owner) : base(owner)
         {

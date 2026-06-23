@@ -4,8 +4,8 @@ namespace Arcanist
 {
     public abstract class PlayerAnimStateBase
     {        
-        public const float INPUT_RESET_TIME = 0.3f;
-        public const float COMBO_INPUT_END_TIME = 0.9f;
+        public const float INPUT_RESET_TIME = 0.35f;
+        public const float COMBO_INPUT_END_TIME = 0.75f;
 
         protected PlayerController Owner { get; }
         protected Animator Animator => Owner.Animator;

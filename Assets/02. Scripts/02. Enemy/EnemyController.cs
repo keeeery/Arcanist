@@ -179,11 +179,6 @@ namespace Arcanist
             Animator.SetTrigger(ATTACK);
         }
 
-        public void ProcessAttack()
-        {
-            // 이후 EnemyAttackHitbox 활성화 또는 공격 판정 호출 위치
-        }
-
         public void Hurt()
         {
             if (isDead)

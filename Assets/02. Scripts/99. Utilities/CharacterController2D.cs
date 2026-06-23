@@ -82,7 +82,7 @@ namespace Utilities
 
         public void SetMoveInput(float horizontal)
         {
-            moveInput = Mathf.Clamp(horizontal, -1.0f, 1.0f);
+            moveInput = Mathf.Clamp(horizontal, -2.0f, 2.0f);
         }
 
         public void AddExternalMovement(Vector3 delta)
