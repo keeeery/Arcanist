@@ -1127,7 +1127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2343,7 +2343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Color: {r: 0.4, g: 0.4, b: 0.4, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -41864,7 +41864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -42251,7 +42251,6 @@ MonoBehaviour:
   absorbTarget: {fileID: 1276503360}
   absorbTargetCamera: {fileID: 404575048}
   useFxAbsorbDuration: 0.6
-  useFxLifeTime: 0.8
   useFxStartScale: 1
   useFxEndScale: 0.35
   useFxSpawnNormalizedTime: 0.35
@@ -42579,9 +42578,9 @@ PrefabInstance:
       propertyPath: parryCooldownFill
       value: 
       objectReference: {fileID: 642741751}
-    - target: {fileID: 1753533218181533399, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
-      propertyPath: <Stat>k__BackingField.<MaxHp>k__BackingField
-      value: 5000
+    - target: {fileID: 2951469183574969411, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2968401417501518829, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
       propertyPath: m_Name
@@ -42595,6 +42594,10 @@ PrefabInstance:
       propertyPath: cameraImpulseController
       value: 
       objectReference: {fileID: 221220323}
+    - target: {fileID: 7130106607857816216, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7130106607857816216, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5
@@ -42633,6 +42636,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7130106607857816216, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692363909361041154, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692363909361041154, guid: e182b9c322248401aad90cb31e37dd97, type: 3}
+      propertyPath: m_ConstrainProportionsScale
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,7 +29,6 @@ namespace Arcanist
 
 
         public Animator Animator { get; private set; }
-        private SpriteRenderer SpriteRenderer { get; set; }
         private CharacterController2D Controller2D { get; set; }
 
         public int FacingDirection { get; private set; } = 1;
@@ -61,6 +59,8 @@ namespace Arcanist
         [SerializeField] private Transform fxSpawnPoint;
         [SerializeField] private Transform sprintFxSpawnPoint;
 
+        [SerializeField] private Transform cardUseFXPivot;
+
         private float nextDashTime;
         private float nextParryTime;
         private float hurtEndTime;
@@ -81,7 +81,6 @@ namespace Arcanist
         private void Awake()
         {
             Animator = GetComponentInChildren<Animator>();
-            SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
             Controller2D = GetComponent<CharacterController2D>();
 
             defaultState = new MovementState(this);
@@ -138,51 +137,18 @@ namespace Arcanist
 
             Vector2 inputVector = SimpleInput.GetMoveAxisRaw();
             float absMovement = Mathf.Abs(inputVector.x);
-
-            bool shiftPressed = Keyboard.current.leftShiftKey.isPressed;
             bool hasMoveInput = absMovement > 0.0f;
-
-            if (shiftPressed && hasMoveInput)
-                sprintInputGraceEndTime = Time.time + sprintInputGraceTime;
-
-            bool wantsSprint = Controller2D.IsGrounded && shiftPressed && (hasMoveInput || Time.time < sprintInputGraceEndTime);
-            bool canSprint = TrySprint(wantsSprint);
+            bool canSprint = UpdateSprintState(hasMoveInput, Keyboard.current.leftShiftKey.isPressed);
 
             Animator.SetFloat(MOVEMENT, canSprint ? 2.0f : absMovement);
-            SetSprintState(canSprint);
-
-            if (absMovement > 0)
-            {
-                FacingDirection = (inputVector.x < 0 ? -1 : 1);
-
-                Vector3 scale = Animator.transform.localScale;
-                scale.x = Mathf.Abs(scale.x) * FacingDirection;
-                Animator.transform.localScale = scale;
-
-                UpdateSprintLoopFxDirection();
-            }
-
-            float moveInput = inputVector.x;
-
-            if (canSprint) moveInput *= sprintMultiplier;
-
-            Controller2D.SetMoveInput(moveInput);
+            ApplyFacing(inputVector.x);
+            ApplyMoveInput(inputVector.x, canSprint);
 
             if (SimpleInput.GetKeyDown(Key.D))
                 Animator.SetBool(IS_ATTACK, true);
 
-            if (SimpleInput.GetKeyDown(Key.S))
-            {
-                if (Time.time >= nextParryTime)
-                {
-                    nextParryTime = Time.time + parryCooldown;
-                    IsParrying = true;
-                    StopMovement();
-                    OpenParryWindow();
-                    Animator.SetTrigger(PARRY);
-                    Debug.Log("[Parry] Start");
-                }
-            }
+            if (SimpleInput.GetKeyDown(Key.S) && Time.time >= nextParryTime)
+                StartParry();
         }
 
         public void HandleMovementWithoutAnimation(float moveScale = 0.75f)
@@ -193,32 +159,67 @@ namespace Arcanist
                 return;
             }
 
-            float horizontal = 0.0f;
+            float horizontal = GetHorizontalInput(moveScale);
+            bool hasMoveInput = Mathf.Abs(horizontal) > 0.0f;
+            bool canSprint = UpdateSprintState(hasMoveInput, Keyboard.current.leftShiftKey.isPressed);
 
-            if (Keyboard.current.leftArrowKey.isPressed)
-                horizontal = -moveScale;
-            else if (Keyboard.current.rightArrowKey.isPressed)
-                horizontal = moveScale;
+            ApplyFacing(horizontal);
+            ApplyMoveInput(horizontal, canSprint);
+        }
 
-            if (Mathf.Abs(horizontal) > 0.0f)
-            {
-                FacingDirection = horizontal < 0 ? -1 : 1;
+        private float GetHorizontalInput(float moveScale)
+        {
+            if (Keyboard.current.leftArrowKey.isPressed) return -moveScale;
 
-                Vector3 scale = Animator.transform.localScale;
-                scale.x = Mathf.Abs(scale.x) * FacingDirection;
-                Animator.transform.localScale = scale;
+            if (Keyboard.current.rightArrowKey.isPressed) return moveScale;
 
-                UpdateSprintLoopFxDirection();
-            }
+            return 0.0f;
+        }
 
-            bool wantsSprint = Controller2D.IsGrounded && Mathf.Abs(horizontal) > 0.0f && Keyboard.current.leftShiftKey.isPressed;
+        private bool UpdateSprintState(bool hasMoveInput, bool shiftPressed)
+        {
+            if (shiftPressed && hasMoveInput)
+                sprintInputGraceEndTime = Time.time + sprintInputGraceTime;
+
+            bool wantsSprint = Controller2D.IsGrounded && shiftPressed && (hasMoveInput || Time.time < sprintInputGraceEndTime);
             bool canSprint = TrySprint(wantsSprint);
 
-            SetSprintState(canSprint);
+            SetSprintState(canSprint, Controller2D.IsGrounded);
+            return canSprint;
+        }
 
+        private void ApplyFacing(float horizontal)
+        {
+            if (Mathf.Abs(horizontal) <= 0.0f) return;
+
+            FacingDirection = horizontal < 0.0f ? -1 : 1;
+
+            Vector3 scale = Animator.transform.localScale;
+            scale.x = Mathf.Abs(scale.x) * FacingDirection;
+            Animator.transform.localScale = scale;
+
+            // Vector3 pivotScale = cardUseFXPivot.transform.localScale;
+            // pivotScale.x = Mathf.Abs(pivotScale.x) * FacingDirection;
+            // cardUseFXPivot.transform.localScale = pivotScale;
+
+            UpdateSprintLoopFxDirection();
+        }
+
+        private void ApplyMoveInput(float horizontal, bool canSprint)
+        {
             if (canSprint) horizontal *= sprintMultiplier;
 
             Controller2D.SetMoveInput(horizontal);
+        }
+
+        private void StartParry()
+        {
+            nextParryTime = Time.time + parryCooldown;
+            IsParrying = true;
+            StopMovement();
+            OpenParryWindow();
+            Animator.SetTrigger(PARRY);
+            Debug.Log("[Parry] Start");
         }
 
         public void StopMovement()
@@ -232,7 +233,6 @@ namespace Arcanist
             if (IsParryWindowOpen) return;
 
             IsParryWindowOpen = true;
-            Debug.Log("[Parry] Window Open");
         }
 
         public void CloseParryWindow()
@@ -240,14 +240,12 @@ namespace Arcanist
             if (IsParryWindowOpen == false) return;
 
             IsParryWindowOpen = false;
-            Debug.Log("[Parry] Window Close");
         }
 
         public void EndParry()
         {
             IsParrying = false;
             CloseParryWindow();
-            Debug.Log("[Parry] End");
         }
 
         public void SuccessParry()
@@ -257,8 +255,6 @@ namespace Arcanist
 
             Animator.ResetTrigger(PARRY);
             Animator.SetTrigger(PARRY_SUCCESS);
-
-            Debug.Log("패링 성공 애니메이션");
         }
 
         public void Hurt()
@@ -294,16 +290,11 @@ namespace Arcanist
 
         private void UpdateJumpInput()
         {
-            if (IsParrying || isHurt || isDead)
-                return;
+            if (IsParrying || isHurt || isDead) return;
 
-            if (SimpleInput.GetKeyDown(Key.Space) == false)
-                return;
+            if (SimpleInput.GetKeyDown(Key.Space) == false) return;
 
             bool wasGrounded = Controller2D.IsGrounded;
-            if (wasGrounded)
-                SetSprintState(false, false);
-
             bool jumpAccepted = Controller2D.RequestJump();
 
             if (jumpAccepted && wasGrounded == false)
@@ -315,19 +306,15 @@ namespace Arcanist
 
         private void UpdateDashInput()
         {
-            if (IsParrying || isHurt || isDead)
-                return;
+            if (IsParrying || isHurt || isDead) return;
 
-            if (SimpleInput.GetKeyDown(Key.A) == false)
-                return;
+            if (SimpleInput.GetKeyDown(Key.A) == false) return;
 
-            if (Time.time < nextDashTime)
-                return;
+            if (Time.time < nextDashTime) return;
 
             bool dashAccepted = Controller2D.RequestDash(FacingDirection, dashPower, dashDuration);
 
-            if (dashAccepted == false)
-                return;
+            if (dashAccepted == false) return;
 
             nextDashTime = Time.time + dashCooldown;
             Animator.SetTrigger(DASH);
@@ -336,12 +323,9 @@ namespace Arcanist
 
         private void UpdateCooldownUI()
         {
-            if (Player.LocalPlayer == null)
-                return;
+            if (Player.LocalPlayer == null) return;
 
-            Player.LocalPlayer.UpdateParryCooldownUI(
-                Mathf.Max(0.0f, nextParryTime - Time.time),
-                parryCooldown);
+            Player.LocalPlayer.UpdateParryCooldownUI(Mathf.Max(0.0f, nextParryTime - Time.time), parryCooldown);
         }
 
         private bool TrySprint(bool wantsSprint)
@@ -366,17 +350,14 @@ namespace Arcanist
                 return false;
             }
 
-            //isSprint = true;
             return true;
         }
 
         private void UpdateStaminaRecovery()
         {
-            if (isSprint || Player.LocalPlayer == null)
-                return;
+            if (isSprint || Player.LocalPlayer == null) return;
 
-            if (Time.time < staminaRecoveryStartTime)
-                return;
+            if (Time.time < staminaRecoveryStartTime) return;
 
             Player.LocalPlayer.RecoverStamina(staminaRecoveryPerSec * Time.deltaTime);
         }
@@ -403,25 +384,32 @@ namespace Arcanist
 
             if (value)
             {
-                if (sprintLoopFx == null)
-                {
-                    Transform spawnPoint = sprintFxSpawnPoint != null ? sprintFxSpawnPoint : transform;
-                    sprintLoopFx = Instantiate(sprintLoopFxPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
-                    
-                    UpdateSprintLoopFxDirection();
-                }
-
+                StartSprintLoopFx();
                 return;
             }
 
-            if (sprintLoopFx != null)
-            {
-                Destroy(sprintLoopFx);
-                sprintLoopFx = null;
-            }
+            StopSprintLoopFx();
 
             if (playEndFx && Controller2D.IsGrounded)
                 SpawnFx(sprintEndFxPrefab, sprintFxSpawnPoint);
+        }
+
+        private void StartSprintLoopFx()
+        {
+            if (sprintLoopFx != null || sprintLoopFxPrefab == null)
+                return;
+
+            Transform spawnPoint = sprintFxSpawnPoint != null ? sprintFxSpawnPoint : transform;
+            sprintLoopFx = Instantiate(sprintLoopFxPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
+            UpdateSprintLoopFxDirection();
+        }
+
+        private void StopSprintLoopFx()
+        {
+            if (sprintLoopFx == null) return;
+
+            Destroy(sprintLoopFx);
+            sprintLoopFx = null;
         }
 
         private void SpawnFx(GameObject prefab)
@@ -431,8 +419,7 @@ namespace Arcanist
 
         private void SpawnFx(GameObject prefab, Transform customSpawnPoint)
         {
-            if (prefab == null)
-                return;
+            if (prefab == null) return;
 
             Transform spawnPoint = customSpawnPoint != null ? customSpawnPoint : transform;
             GameObject fx = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
@@ -449,6 +436,8 @@ namespace Arcanist
             bool isGrounded = Controller2D.IsGrounded;
             Animator.SetBool(IS_GROUNDED, isGrounded);
 
+            if (isGrounded == false) StopSprintLoopFx();
+
             if (IsParrying || isHurt || isDead)
             {
                 prevIsGrounded = isGrounded;
@@ -457,8 +446,6 @@ namespace Arcanist
 
             if (prevIsGrounded && isGrounded == false)
             {
-                SetSprintState(false, false);
-
                 if (Controller2D.VerticalVelocity > 0.0f)
                     Animator.SetTrigger(JUMP);
                 else 
