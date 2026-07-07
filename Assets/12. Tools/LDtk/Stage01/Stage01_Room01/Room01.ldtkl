@@ -8,7 +8,7 @@
 		"appVersion": "1.5.3",
 		"url": "https://ldtk.io"
 	},
-	"identifier": "Level_0",
+	"identifier": "Room01",
 	"iid": "02059d11-6fc0-11f1-93ad-2b5182f7e336",
 	"uid": 0,
 	"worldX": -384,
@@ -18,7 +18,7 @@
 	"pxHei": 1776,
 	"__bgColor": "#696A79",
 	"bgColor": null,
-	"useAutoIdentifier": true,
+	"useAutoIdentifier": false,
 	"bgRelPath": null,
 	"bgPos": null,
 	"bgPivotX": 0.5,
